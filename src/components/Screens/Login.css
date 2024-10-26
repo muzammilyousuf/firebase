@@ -1,0 +1,27 @@
+.login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 7%;
+  }
+
+table, tr, th {
+    width: 50%;
+    padding: 1%;
+    font-size: larger;
+}
+
+td{
+    padding: 1%;
+}
+
+input{
+    width: 100%;
+    padding: 1%;
+}
+
+
+#signIn-btn, #signUp-btn{
+    width: 100%;
+    font-size: medium;
+}
