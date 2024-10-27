@@ -2,7 +2,6 @@ import React from "react";
 import './Login.css'
 import {
   getAuth,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,   
 } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
