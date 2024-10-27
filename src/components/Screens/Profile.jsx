@@ -10,6 +10,7 @@ import {
   getDocs,
   auth,
   updateDoc,
+  deleteDoc,
 } from "../../config/firebase";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +32,7 @@ function Profile() {
         querySnapshot.forEach((doc) => {
           // console.log(`${doc.id} => ${doc.data()}`);
           if (doc.data().email == userEmail) {
+            docId = doc.id;
             document.getElementById("fname").value = doc.data().first;
             document.getElementById("lname").value = doc.data().last;
             document.getElementById("dob").value = doc.data().dob;
@@ -75,34 +77,31 @@ function Profile() {
   };
 
   const createProfile = async () => {
-    if (
-      (document.getElementById("create-profile-btn").value = "UPDATE PROFILE")
-    ) {
+    if(document.getElementById("create-profile-btn").value = "UPDATE PROFILE"){
       try {
-        const docRef = doc(db, "users", docRef.id);
-        await updateDoc(docRef, {
-          first: document.getElementById("fname").value,
-          last: document.getElementById("lname").value,
-          dob: document.getElementById("dob").value,
-          email: userEmail,
-        });
+        await deleteDoc(doc(db, "users", docId));
       } catch (e) {
         console.error("Error adding document: ", e);
-      }
-    } else {
-      try {
-        const docRef = await addDoc(collection(db, "users"), {
-          first: document.getElementById("fname").value,
-          last: document.getElementById("lname").value,
-          dob: document.getElementById("dob").value,
-          email: userEmail,
-        });
-        console.log("Document written with ID: ", docRef.id);
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
+      };
+    };
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        first: document.getElementById("fname").value,
+        last: document.getElementById("lname").value,
+        dob: document.getElementById("dob").value,
+        email: userEmail,
+      });
+      console.log("Document written with ID: ", docRef.id);
+      document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      
     }
   };
+
+  // const updateProfile = async () => {
+
+  // };
 
   return (
     <div>
