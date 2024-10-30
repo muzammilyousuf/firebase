@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import {
   signOut,
   onAuthStateChanged,
@@ -9,22 +9,39 @@ import {
   getDocs,
   auth,
   updateProfile,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc
 } from "../../config/firebase";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const Profile = () =>{
-  var navigate = useNavigate();
-  var userId;
-  var docId;
-  var userEmail;
+const Profile = () => {
+  let navigate = useNavigate();
+  // let docId;
+  // let userEmail;
+  // let CreateProfile;
+
+  const valueRef = useRef('');
+
+  const [docId, setDocId] = useState("")
+
+  const [User, setUser] = useState({
+    id: docId,
+    first: "",
+    last: "",
+    dob: "",
+    gender: "",
+    city: "",
+    email: valueRef.userEmail,
+    CreateProfile: "CREATE PROFILE",
+  });
 
 
-
-
-
-  // const buttonText = User.city != "" ? "UPDATE PROFILE" : "CREATE PROFILE";
+  const handleChange = (e) =>
+    setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   function userAuthentication() {
 
@@ -33,8 +50,10 @@ const Profile = () =>{
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid;
-        userEmail = user?.email
+        // console.log(user);
+        valueRef.userEmail = user.email
         // console.log(user)
+
         if (!user.emailVerified) {
           // console.log("userEmail is", userEmail);
           // console.log(user);
@@ -42,7 +61,7 @@ const Profile = () =>{
             // console.log(auth.currentUser)
             .then(() => {
               window.alert("Email verification sent!");
-              toast.success(userEmail, "Email verification sent!", {
+              toast.success(valueRef.userEmail, "Email verification sent!", {
                 position: "top-center",
               });
               navigate("/login");
@@ -56,35 +75,38 @@ const Profile = () =>{
           const querySnapshot = await getDocs(collection(db, "users"));
           querySnapshot.forEach((doc) => {
             // console.log(`${doc.id} => ${doc.data()}`);
-            if (doc.data().email == userEmail) {
-              userId = doc.id;
+            if (doc.data().email == valueRef.userEmail) {
+              // docId = doc.id;
+              // valueRef.docId = doc.id;
+              setDocId(doc.id);
+
+              // console.log(docId)
+
               setUser(doc.data());
-              User.fname = doc.data().first;
-              User.lname = doc.data().last;
-              User.dob = doc.data().dob;
-              User.gender = doc.data().gender;
-              User.city = doc.data().city;
+              // User.fname = doc.data().first;
+              // User.lname = doc.data().last;
+              // User.dob = doc.data().dob;
+              // User.gender = doc.data().gender;
+              // User.city = doc.data().city;
               // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
-              User.CreateProfile = "UPDATE PROFILE";
-            } else {
-              // console.log(userEmail);
+              // User.CreateProfile = "UPDATE PROFILE";
             }
           });
-
         }
       } else {
-        navigate("/login");
+        // navigate("/login");
         console.log("User is signed out");
         // ...
       }
     });
     // console.log(userEmail);
   }
+
   useEffect(() => {
     userAuthentication();
   }, [])
 
-  function logOut(){
+  function logOut() {
     signOut(auth)
       .then(() => {
         navigate("/login");
@@ -99,72 +121,107 @@ const Profile = () =>{
       });
   }
 
-  const [User, setUser] = useState({
-    first: "",
-    last: "",
-    dob: "",
-    gender: "",
-    city: "",
-    email: userEmail,
-    CreateProfile: "UPDATE PROFILE",
-  });
+
 
   const createProfile = async () => {
-    console.log(docId)
-    if (docId || User.CreateProfile == "UPDATE PROFILE"){
-      userupdateProfile();
+    // console.log(docId)
+    if (User.CreateProfile == "UPDATE PROFILE" && docId) {
+      try {
+        await deleteDoc(doc(db, "users", docId));
+        console.log(docId, "deleted successfully!")
+      }
+      catch (e) {
+        console.error("Error deleting document: ", e);
+      }
     }
+
+    //   userupdateProfile();
+    // }
     // else {
     //   console.log(docId, "docId is not found")
     //   }
-      // } 
-      else{
-      console.log("userEmail is", userEmail);
-      console.log("User.email is", User.email);
-      try {
-        const docRef = await addDoc(collection(db, "users"), {
-          email: userEmail || User.email,
-          first: User.first,
-          last: User.last,
-          dob: User.dob,
-          gender: User.gender,
-          city: User.city,
-        });
-        User.CreateProfile = "UPDATE PROFILE"
-        // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
-        console.log("Document written with ID: ", docRef.id);
-        docId = docRef.id;
-      } catch (e) {
-        console.error("Error adding document: ", e);
-      }
+    // } 
+    // else {
+    // console.log("userEmail is", valueRef.userEmail);
+
+
+    try {
+      const docRef = await addDoc(collection(db, "users"), {
+        // id: User.id || docId,
+        email: User.email || valueRef.userEmail,
+        first: User.first,
+        last: User.last,
+        dob: User.dob,
+        gender: User.gender,
+        city: User.city,
+        CreateProfile: "UPDATE PROFILE"
+      });
+      // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
+      console.log("Document written with ID: ", docRef.id);
+
+      User.CreateProfile = "UPDATE PROFILE"
+      // docId = docRef.id
+      // valueRef.docId = docRef.id
+      setDocId(docRef.id);
+
+      // console.log("docId is", docId);
+
+    } catch (e) {
+      console.error("Error adding document: ", e);
     }
+    // }
   }
+
+  // const CreateProfile = User.id != "" ? "UPDATE PROFILE" : "CREATE PROFILE";
+
 
 
   const userupdateProfile = async () => {
     console.log("Update Profile Call");
-    updateProfile(auth.currentUser, {
-      email: User.email,
-      first: User.first,
-      last: User.last,
-      dob: User.dob,
-      gender: User.gender,
-      city: User.city,
-    })
-      .then(() => {
-        console.log(docId, "docId is updated!");
-        // Profile updated!
-        // ...
-      })
-      .catch((error) => {
-        // console.log(error);
-        // An error occurred
-        // ...
-      });
+
+    // await deleteDoc(doc(db, "users", docId));
+
+
+    // const docIdDocRef = doc(db, "users", docId);
+    // await setDoc(docIdDocRef, {
+    //   first: User.first,
+    //   last: User.last,
+    //   dob: User.dob,
+    //   gender: User.gender,
+    //   city: User.city,
+    // });
+
+    // // To update age and favorite color:
+    // await updateDoc(docIdDocRef, {
+    //   first: User.first,
+    //   last: User.last,
+    //   dob: User.dob,
+    //   gender: User.gender,
+    //   city: User.city,
+    // });
+
+
+    //   updateProfile(auth.currentUser, {
+    //     email: User.email,
+    //     first: User.first,
+    //     last: User.last,
+    //     dob: User.dob,
+    //     gender: User.gender,
+    //     city: User.city,
+    //   })
+    //     .then(() => {
+    //       console.log(docId, "docId is updated!");
+    //       // Profile updated!
+    //       // ...
+    //     })
+    //     .catch((error) => {
+    //       // console.log(error);
+    //       // An error occurred
+    //       // ...
+    //     });
   }
 
-  const handleChange = (e) =>
-    setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
 
   return (
     <div>
@@ -285,7 +342,7 @@ const Profile = () =>{
                 <Button
                   value="SIGN OUT"
                   id="signOut-btn"
-                  onClick={()=>logOut()}
+                  onClick={() => logOut()}
                   class="btn btn-secondary"
                 ></Button>
               </td>
