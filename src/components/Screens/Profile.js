@@ -35,6 +35,7 @@ const Profile = () => {
     dob: "",
     gender: "",
     city: "",
+    phoneNumber: "",
     email: valueRef.userEmail,
     CreateProfile: "CREATE PROFILE",
   });
@@ -154,10 +155,12 @@ const Profile = () => {
         dob: User.dob,
         gender: User.gender,
         city: User.city,
+        phoneNumber: User.phoneNumber,
         CreateProfile: "UPDATE PROFILE"
       });
       // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
       console.log("Document written with ID: ", docRef.id);
+      userupdateProfile();
 
       User.CreateProfile = "UPDATE PROFILE"
       // docId = docRef.id
@@ -178,6 +181,16 @@ const Profile = () => {
 
   const userupdateProfile = async () => {
     console.log("Update Profile Call");
+
+    if (User.CreateProfile == "UPDATE PROFILE") {
+      toast.success("USER PROFILE UPDATED!", {
+        position: "top-center",
+      });
+    } else {
+      toast.success("USER PROFILE CREATED!", {
+        position: "top-center",
+      });
+    }
 
     // await deleteDoc(doc(db, "users", docId));
 
@@ -324,6 +337,20 @@ const Profile = () => {
                   <option> Islamabad </option>
                   <option> Peshawar </option>
                 </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Phone Number</td>
+              <td>
+                <input
+                  type="number"
+                  name="phoneNumber"
+                  id="phoneNumber"
+                  value={User.phoneNumber}
+                  placeholder="Enter your Phone Number"
+                  onChange={handleChange}
+                  required
+                />
               </td>
             </tr>
           </tbody>
