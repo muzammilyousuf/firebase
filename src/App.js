@@ -10,6 +10,9 @@ import Login from './components/Screens/Login';
 import Navbar from './components/Navigation/Navbar';
 import Profile from './components/Screens/Profile';
 import Signup from './components/Screens/Signup';
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
@@ -26,6 +29,7 @@ function App() {
           <Route path='/signup' element= {<Signup/>} > </Route>
         
         </Routes>
+      <ToastContainer/>
       </BrowserRouter>
 
     </div>

@@ -6,6 +6,7 @@ import {
 } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
+import {toast} from "react-toastify";
 
 function Login() {
   let navigate = useNavigate();
@@ -15,7 +16,7 @@ function Login() {
     navigate("/signup");
   };
 
-  const signIn = () => {
+  function signIn(){
     const auth = getAuth();
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
@@ -25,12 +26,18 @@ function Login() {
         const user = userCredential.user;
         // ...
         console.log(user.email, "successfully logged in");
+        toast.success("successfully logged in", {
+          position: "top-center",
+        })
         navigate("/profile");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorMessage);
+        // console.log(errorMessage);
+        toast.error(errorCode, {
+          position: "top-center",
+        })
       });
   };
 
@@ -66,7 +73,7 @@ function Login() {
               <Button
                 value={"SIGN IN"}
                 id="signIn-btn"
-                onClick={signIn}
+                onClick={()=>signIn()}
                 class="btn btn-primary"
               ></Button>
               <br/>

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "firebase/auth";
-import { getFirestore, doc, setDoc, Timestamp, collection, addDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, } from "firebase/firestore";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification, updateProfile } from "firebase/auth";
+import { getFirestore, doc, setDoc, Timestamp, collection, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -29,4 +29,4 @@ const db = getFirestore(app);
 
 const storage = getStorage();
 
-export { auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification, db, doc, setDoc, Timestamp, collection, addDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, storage, ref, uploadBytes, uploadBytesResumable, getDownloadURL }
+export { auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendEmailVerification, db, doc, setDoc, Timestamp, collection, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, storage, ref, uploadBytes, uploadBytesResumable, getDownloadURL }
