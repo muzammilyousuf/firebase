@@ -8,11 +8,16 @@ import {
   db,
   getDocs,
   auth,
-  updateProfile,
+  // updateProfile,
   doc,
-  setDoc,
-  updateDoc,
-  deleteDoc
+  // setDoc,
+  // updateDoc,
+  deleteDoc,
+  ref,
+  storage,
+  uploadBytes,
+  getDownloadURL,
+  uploadBytesResumable
 } from "../../config/firebase";
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
@@ -26,10 +31,12 @@ const Profile = () => {
 
   const valueRef = useRef('');
 
-  const [docId, setDocId] = useState("")
+  const [docId, setDocId] = useState("");
+  const [imgUrl, setImgUrl] = useState("")
 
   const [User, setUser] = useState({
     id: docId,
+    displayPicture: valueRef.dpURL,
     first: "",
     last: "",
     dob: "",
@@ -51,7 +58,7 @@ const Profile = () => {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid;
-        // console.log(user);
+        console.log(uid);
         valueRef.userEmail = user.email
         // console.log(user)
 
@@ -76,7 +83,7 @@ const Profile = () => {
           const querySnapshot = await getDocs(collection(db, "users"));
           querySnapshot.forEach((doc) => {
             // console.log(`${doc.id} => ${doc.data()}`);
-            if (doc.data().email == valueRef.userEmail) {
+            if (doc.data().email === valueRef.userEmail) {
               // docId = doc.id;
               // valueRef.docId = doc.id;
               setDocId(doc.id);
@@ -126,7 +133,7 @@ const Profile = () => {
 
   const createProfile = async () => {
     // console.log(docId)
-    if (User.CreateProfile == "UPDATE PROFILE" && docId) {
+    if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
         await deleteDoc(doc(db, "users", docId));
         console.log(docId, "deleted successfully!")
@@ -150,6 +157,7 @@ const Profile = () => {
       const docRef = await addDoc(collection(db, "users"), {
         // id: User.id || docId,
         email: User.email || valueRef.userEmail,
+        displayPicture: valueRef.dpURL,
         first: User.first,
         last: User.last,
         dob: User.dob,
@@ -182,7 +190,7 @@ const Profile = () => {
   const userupdateProfile = async () => {
     console.log("Update Profile Call");
 
-    if (User.CreateProfile == "UPDATE PROFILE") {
+    if (User.CreateProfile === "UPDATE PROFILE") {
       toast.success("USER PROFILE UPDATED!", {
         position: "top-center",
       });
@@ -235,6 +243,89 @@ const Profile = () => {
   }
 
 
+  function uploadProfile() {
+    var dp = document.getElementById("displayPicture").files[0];
+
+    const dpRef = ref(storage, `${dp.name}`);
+
+    // 'file' comes from the Blob or File API
+    uploadBytes(dpRef, dp).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+      toast.success("Display Picture Uploaded!", {
+        position: "top-center",
+      });
+    });
+
+    const uploadTask = uploadBytesResumable(dpRef, dp);
+
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused');
+
+            break;
+          case 'running':
+            console.log('Upload is running');
+            break;
+        }
+      },
+      (error) => {
+        // A full list of error codes is available at
+        // https://firebase.google.com/docs/storage/web/handle-errors
+        switch (error.code) {
+          case 'storage/unauthorized':
+            // User doesn't have permission to access the object
+            break;
+          case 'storage/canceled':
+            // User canceled the upload
+            break;
+
+          // ...
+
+          case 'storage/unknown':
+            // Unknown error occurred, inspect error.serverResponse
+            break;
+        }
+      },
+      () => {
+        // Upload completed successfully, now we can get the download URL
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL);
+          valueRef.dpURL = downloadURL;
+        });
+      }
+    );
+
+    getDownloadURL(ref(storage, `${dp.name}`))
+      .then((url) => {
+        // `url` is the download URL for 'images/stars.jpg'
+
+        // This can be downloaded directly:
+        const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+        };
+        xhr.open('GET', url);
+        xhr.send();
+
+        // Or inserted into an <img> element
+        const img = document.getElementById('previewPicture');
+        img.setAttribute('src', url);
+        setImgUrl(url);
+      })
+      .catch((error) => {
+        // Handle any errors
+      });
+
+  }
+
+
 
   return (
     <div>
@@ -246,6 +337,25 @@ const Profile = () => {
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td>Profile Picture</td>
+              <td>
+                <img id="previewPicture" />
+                <input
+                  type="file"
+                  name="displayPicture"
+                  id="displayPicture"
+                />
+                <Button
+                  value="UPLOAD"
+                  id="upload"
+                  onClick={() => uploadProfile()}
+                  class="btn btn-secondary"
+                ></Button>
+              </td>
+
+            </tr>
+
             <tr>
               <td>First Name</td>
               <td>

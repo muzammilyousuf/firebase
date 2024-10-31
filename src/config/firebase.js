@@ -3,6 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification, updateProfile } from "firebase/auth";
 import { getFirestore, doc, setDoc, Timestamp, collection, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getDatabase, set } from "firebase/database";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -14,7 +15,9 @@ const firebaseConfig = {
   projectId: "fir-23f49",
   storageBucket: "fir-23f49.appspot.com",
   messagingSenderId: "190091871310",
-  appId: "1:190091871310:web:903c66f9ae7b17c667ef1f"
+  appId: "1:190091871310:web:903c66f9ae7b17c667ef1f",
+  databaseURL: "https://fir-23f49-default-rtdb.firebaseio.com/",
+  storageBucket: "gs://fir-23f49.appspot.com",
 };
 
 // Initialize Firebase
@@ -29,4 +32,6 @@ const db = getFirestore(app);
 
 const storage = getStorage();
 
-export { auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendEmailVerification, db, doc, setDoc, Timestamp, collection, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, storage, ref, uploadBytes, uploadBytesResumable, getDownloadURL }
+const database = getDatabase(app);
+
+export { auth, database, set, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, sendEmailVerification, db, doc, setDoc, Timestamp, collection, addDoc, getDoc, getDocs, updateDoc, serverTimestamp, arrayUnion, arrayRemove, increment, deleteDoc, deleteField, storage, ref, uploadBytes, uploadBytesResumable, getDownloadURL }
