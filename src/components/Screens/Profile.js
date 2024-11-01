@@ -89,8 +89,8 @@ const Profile = () => {
               setDocId(doc.id);
 
               // console.log(docId)
-              document.getElementById('previewPicture').setAttribute('src', valueRef.imageUrl)
-              console.log(valueRef.imageUrl);
+              document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
+              document.getElementById('title').textContent = "UPDATE PROFILE"
               setUser(doc.data());
               // User.fname = doc.data().first;
               // User.lname = doc.data().last;
@@ -246,10 +246,13 @@ const Profile = () => {
 
   function uploadProfile() {
     var dp = document.getElementById("displayPicture").files[0];
-
+    
+    if(dp !== ""){
+      console.log("UPDATE FUNCTION CALL")
     const dpRef = ref(storage, `${dp.name}`);
 
     // 'file' comes from the Blob or File API
+    if(dpRef != "")
     uploadBytes(dpRef, dp).then((snapshot) => {
       console.log('Uploaded a blob or file!');
       toast.success("Display Picture Uploaded!", {
@@ -324,7 +327,7 @@ const Profile = () => {
       .catch((error) => {
         // Handle any errors
       });
-
+    }
   }
 
   return (
@@ -333,14 +336,16 @@ const Profile = () => {
         <table>
           <thead>
             <tr style={{ textAlign: "center" }}>
-              <th colSpan={2}>CREATE PROFILE</th>
+              <th colSpan={2}> <label id="title"> CREATE PROFILE </label></th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>Profile Picture</td>
               <td>
+                <div id="dp">
                 <img id="previewPicture" />
+                </div>
                 <input
                   type="file"
                   name="displayPicture"
