@@ -36,7 +36,7 @@ const Profile = () => {
 
   const [User, setUser] = useState({
     id: docId,
-    displayPicture: valueRef.dpURL,
+    displayPicture: valueRef.imageUrl,
     first: "",
     last: "",
     dob: "",
@@ -89,7 +89,8 @@ const Profile = () => {
               setDocId(doc.id);
 
               // console.log(docId)
-
+              document.getElementById('previewPicture').setAttribute('src', valueRef.imageUrl)
+              console.log(valueRef.imageUrl);
               setUser(doc.data());
               // User.fname = doc.data().first;
               // User.lname = doc.data().last;
@@ -157,7 +158,7 @@ const Profile = () => {
       const docRef = await addDoc(collection(db, "users"), {
         // id: User.id || docId,
         email: User.email || valueRef.userEmail,
-        displayPicture: valueRef.dpURL,
+        displayPicture: valueRef.imageUrl,
         first: User.first,
         last: User.last,
         dob: User.dob,
@@ -296,7 +297,7 @@ const Profile = () => {
         // Upload completed successfully, now we can get the download URL
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
-          valueRef.dpURL = downloadURL;
+
         });
       }
     );
@@ -317,15 +318,14 @@ const Profile = () => {
         // Or inserted into an <img> element
         const img = document.getElementById('previewPicture');
         img.setAttribute('src', url);
-        setImgUrl(url);
+        valueRef.imageUrl = url;
+
       })
       .catch((error) => {
         // Handle any errors
       });
 
   }
-
-
 
   return (
     <div>
