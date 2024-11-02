@@ -1,5 +1,6 @@
 
 import './App.css';
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import Home from './components/Screens/Home'
@@ -16,7 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
-    <div>
+    <React.StrictMode>
       <BrowserRouter>
       <Navbar/>
         <Routes>
@@ -32,7 +33,7 @@ function App() {
       <ToastContainer/>
       </BrowserRouter>
 
-    </div>
+    </React.StrictMode>
   );
 }
 

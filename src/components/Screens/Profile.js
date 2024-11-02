@@ -7,7 +7,7 @@ import {
   addDoc,
   db,
   getDocs,
-  auth,
+  getAuth,
   // updateProfile,
   doc,
   // setDoc,
@@ -22,6 +22,7 @@ import {
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import no_dp from "./no dp.jpeg"
 
 const Profile = () => {
   let navigate = useNavigate();
@@ -32,7 +33,6 @@ const Profile = () => {
   const valueRef = useRef('');
 
   const [docId, setDocId] = useState("");
-  const [imgUrl, setImgUrl] = useState("")
 
   const [User, setUser] = useState({
     id: docId,
@@ -51,76 +51,76 @@ const Profile = () => {
   const handleChange = (e) =>
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
-  function userAuthentication() {
+  useEffect(() => {
 
-    onAuthStateChanged(auth, async (user) => {
+    const auth = getAuth();
+
+    const userAuthentication = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        const uid = user.uid;
-        console.log(uid);
-        valueRef.userEmail = user.email
-        // console.log(user)
+        const uid = user.uid; // ali_id: abc and moshin_id: efg
+        // console.log(user); // email ali@test.com and moshin@test.com
 
-        if (!user.emailVerified) {
-          // console.log("userEmail is", userEmail);
-          // console.log(user);
-          sendEmailVerification(auth.currentUser)
-            // console.log(auth.currentUser)
-            .then(() => {
-              window.alert("Email verification sent!");
-              toast.success(valueRef.userEmail, "Email verification sent!", {
-                position: "top-center",
+        if (user.email && uid) {
+          valueRef.userEmail = user.email
+
+          if (!user.emailVerified) {
+            // console.log("userEmail is", userEmail);
+            // console.log(user);
+            sendEmailVerification(auth.currentUser)
+              .then(() => {
+                // window.alert("Email verification sent!");
+                toast.error("Kindly verify your email first!", {
+                  position: "top-center",
+                });
+                navigate("/login");
+                // ...
+              })
+              .catch((error) => {
+                // An error happened.
+                // console.log(error);
               });
-              navigate("/login");
-              // ...
+          } else {
+            toast.success("successfully logged in", {
+              position: "top-center",
             })
-            .catch((error) => {
-              // An error happened.
-              // console.log(error);
+            const querySnapshot = await getDocs(collection(db, "users"));
+            querySnapshot.forEach((doc) => {
+              // console.log(`${doc.id} => ${doc.data()}`);
+              if (doc.data().email === valueRef.userEmail) {
+                setDocId(doc.id);
+                document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
+                document.getElementById("displayPicture").name = doc.data().displayPicture
+                document.getElementById('title').textContent = "UPDATE PROFILE"
+                setUser(doc.data());
+              }
             });
-        } else {
-          const querySnapshot = await getDocs(collection(db, "users"));
-          querySnapshot.forEach((doc) => {
-            // console.log(`${doc.id} => ${doc.data()}`);
-            if (doc.data().email === valueRef.userEmail) {
-              // docId = doc.id;
-              // valueRef.docId = doc.id;
-              setDocId(doc.id);
-
-              // console.log(docId)
-              document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
-              document.getElementById('title').textContent = "UPDATE PROFILE"
-              setUser(doc.data());
-              // User.fname = doc.data().first;
-              // User.lname = doc.data().last;
-              // User.dob = doc.data().dob;
-              // User.gender = doc.data().gender;
-              // User.city = doc.data().city;
-              // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
-              // User.CreateProfile = "UPDATE PROFILE";
-            }
-          });
+          }
         }
-      } else {
-        // navigate("/login");
-        console.log("User is signed out");
-        // ...
+        else {
+          navigate("/login");
+          console.log("User is signed out");
+          // toast.error("User is signed out", {
+          //   position: "top-center",
+          // });
+          // ...
+        }
       }
     });
-    // console.log(userEmail);
-  }
 
-  useEffect(() => {
-    userAuthentication();
-  }, [])
+    return () => userAuthentication();
+  }, []);
+
+
 
   function logOut() {
+    const auth = getAuth();
     signOut(auth)
       .then(() => {
         navigate("/login");
         console.log("Sign-out successful.");
-        toast.success("Sign-out successful.", {
+        toast.success("User sign out!", {
           position: "top-center",
         });
       })
@@ -128,7 +128,7 @@ const Profile = () => {
         // An error happened.
         // console.log(error);
       });
-  }
+  };
 
 
 
@@ -182,7 +182,7 @@ const Profile = () => {
       console.error("Error adding document: ", e);
     }
     // }
-  }
+  };
 
   // const CreateProfile = User.id != "" ? "UPDATE PROFILE" : "CREATE PROFILE";
 
@@ -241,94 +241,100 @@ const Profile = () => {
     //       // An error occurred
     //       // ...
     //     });
-  }
+  };
 
 
   function uploadProfile() {
     var dp = document.getElementById("displayPicture").files[0];
-    
-    if(dp !== ""){
-      console.log("UPDATE FUNCTION CALL")
-    const dpRef = ref(storage, `${dp.name}`);
+    // console.log(dp)
 
-    // 'file' comes from the Blob or File API
-    if(dpRef != "")
-    uploadBytes(dpRef, dp).then((snapshot) => {
-      console.log('Uploaded a blob or file!');
-      toast.success("Display Picture Uploaded!", {
+    if (dp != undefined) {
+      console.log("UPLOAD FUNCTION CALL")
+      const dpRef = ref(storage, `${dp.name}`);
+
+      // 'file' comes from the Blob or File API
+      if (dpRef != "")
+        uploadBytes(dpRef, dp).then((snapshot) => {
+          console.log('Uploaded a blob or file!');
+          toast.success("Display Picture Uploaded!", {
+            position: "top-center",
+          });
+        });
+
+      const uploadTask = uploadBytesResumable(dpRef, dp);
+
+
+      uploadTask.on('state_changed',
+        (snapshot) => {
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log('Upload is ' + progress + '% done');
+          switch (snapshot.state) {
+            case 'paused':
+              console.log('Upload is paused');
+
+              break;
+            case 'running':
+              console.log('Upload is running');
+              break;
+          }
+        },
+        (error) => {
+          // A full list of error codes is available at
+          // https://firebase.google.com/docs/storage/web/handle-errors
+          switch (error.code) {
+            case 'storage/unauthorized':
+              // User doesn't have permission to access the object
+              break;
+            case 'storage/canceled':
+              // User canceled the upload
+              break;
+
+            // ...
+
+            case 'storage/unknown':
+              // Unknown error occurred, inspect error.serverResponse
+              break;
+          }
+        },
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            console.log('File available at', downloadURL);
+
+          });
+        }
+      );
+
+      getDownloadURL(ref(storage, `${dp.name}`))
+        .then((url) => {
+          // `url` is the download URL for 'images/stars.jpg'
+
+          // This can be downloaded directly:
+          const xhr = new XMLHttpRequest();
+          xhr.responseType = 'blob';
+          xhr.onload = (event) => {
+            const blob = xhr.response;
+          };
+          xhr.open('GET', url);
+          xhr.send();
+
+          // Or inserted into an <img> element
+          const img = document.getElementById('previewPicture');
+          img.setAttribute('src', url);
+          valueRef.imageUrl = url;
+
+        })
+        .catch((error) => {
+          // Handle any errors
+        });
+    }
+    else {
+      toast.error("Choose Profile Picture first!", {
         position: "top-center",
       });
-    });
-
-    const uploadTask = uploadBytesResumable(dpRef, dp);
-
-
-    uploadTask.on('state_changed',
-      (snapshot) => {
-        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
-        switch (snapshot.state) {
-          case 'paused':
-            console.log('Upload is paused');
-
-            break;
-          case 'running':
-            console.log('Upload is running');
-            break;
-        }
-      },
-      (error) => {
-        // A full list of error codes is available at
-        // https://firebase.google.com/docs/storage/web/handle-errors
-        switch (error.code) {
-          case 'storage/unauthorized':
-            // User doesn't have permission to access the object
-            break;
-          case 'storage/canceled':
-            // User canceled the upload
-            break;
-
-          // ...
-
-          case 'storage/unknown':
-            // Unknown error occurred, inspect error.serverResponse
-            break;
-        }
-      },
-      () => {
-        // Upload completed successfully, now we can get the download URL
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
-
-        });
-      }
-    );
-
-    getDownloadURL(ref(storage, `${dp.name}`))
-      .then((url) => {
-        // `url` is the download URL for 'images/stars.jpg'
-
-        // This can be downloaded directly:
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = 'blob';
-        xhr.onload = (event) => {
-          const blob = xhr.response;
-        };
-        xhr.open('GET', url);
-        xhr.send();
-
-        // Or inserted into an <img> element
-        const img = document.getElementById('previewPicture');
-        img.setAttribute('src', url);
-        valueRef.imageUrl = url;
-
-      })
-      .catch((error) => {
-        // Handle any errors
-      });
     }
-  }
+  };
 
   return (
     <div>
@@ -341,22 +347,22 @@ const Profile = () => {
           </thead>
           <tbody>
             <tr>
-              <td>Profile Picture</td>
-              <td>
-                <div id="dp">
-                <img id="previewPicture" />
+              <td colSpan={2}>
+                <div id="dp" style={{ textAlign: "center" }} >
+                  <img id="previewPicture" class="rounded-circle" src={no_dp} />
+                  <input
+                    type="file"
+                    name="displayPicture"
+                    id="displayPicture"
+                  >
+                  </input>
+                  <Button
+                    value="UPLOAD"
+                    id="upload"
+                    onClick={() => uploadProfile()}
+                    class="btn btn-info"
+                  ></Button>
                 </div>
-                <input
-                  type="file"
-                  name="displayPicture"
-                  id="displayPicture"
-                />
-                <Button
-                  value="UPLOAD"
-                  id="upload"
-                  onClick={() => uploadProfile()}
-                  class="btn btn-secondary"
-                ></Button>
               </td>
 
             </tr>
@@ -496,4 +502,4 @@ const Profile = () => {
   );
 }
 
-export default Profile
+export default Profile;

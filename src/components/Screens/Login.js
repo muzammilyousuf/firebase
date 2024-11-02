@@ -2,21 +2,21 @@ import React from "react";
 import './Login.css'
 import {
   getAuth,
-  signInWithEmailAndPassword,   
+  signInWithEmailAndPassword,
 } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 
 function Login() {
   let navigate = useNavigate();
-  
+
 
   const signUp = () => {
     navigate("/signup");
   };
 
-  function signIn(){
+  function signIn() {
     const auth = getAuth();
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
@@ -26,18 +26,32 @@ function Login() {
         const user = userCredential.user;
         // ...
         console.log(user.email, "successfully logged in");
-        toast.success("successfully logged in", {
-          position: "top-center",
-        })
-        navigate("/profile");
+
+        if (email == user.email) {
+          navigate("/profile");
+        }
+
       })
       .catch((error) => {
+        console.log(error);
         const errorCode = error.code;
         const errorMessage = error.message;
-        // console.log(errorMessage);
-        toast.error(errorCode, {
-          position: "top-center",
-        })
+        if (errorCode === "auth/invalid-credential") {
+          toast.error("Wrong password or user not found!", {
+            position: "top-center",
+          })
+          console.log(errorCode);
+
+        }
+        else if (errorCode === "auth/invalid-email") {
+          toast.error("Wrong email address!", {
+            position: "top-center",
+          })
+          console.log(errorCode);
+
+        } else {
+          console.log(errorCode);
+        }
       });
   };
 
@@ -53,17 +67,17 @@ function Login() {
           <tr>
             <td>Email</td>
             <td>
-              <input type="email" name="email" id="email" 
-                  placeholder="Enter your email address"
-                  />
+              <input type="email" name="email" id="email"
+                placeholder="Enter your email address"
+              />
             </td>
           </tr>
           <tr>
             <td>Password</td>
             <td>
-              <input type="password" name="password" id="password" 
-                  placeholder="Enter your password"
-                  />
+              <input type="password" name="password" id="password"
+                placeholder="Enter your password"
+              />
             </td>
           </tr>
         </tbody>
@@ -73,12 +87,12 @@ function Login() {
               <Button
                 value={"SIGN IN"}
                 id="signIn-btn"
-                onClick={()=>signIn()}
+                onClick={() => signIn()}
                 class="btn btn-primary"
               ></Button>
-              <br/>
-              <hr/>
-              <label style={{textAlign:"left"}} > Don't have an account? </label>
+              <br />
+              <hr />
+              <label style={{ textAlign: "left" }} > Don't have an account? </label>
               <Button
                 type="button"
                 value={"SIGN UP"}
