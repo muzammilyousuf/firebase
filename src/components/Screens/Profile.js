@@ -28,7 +28,7 @@ import VerifyEmail from "./VerifyEmail";
 import { useLogout } from "../Functions/useLogout";
 
 const Profile = () => {
-const logOut=useLogout();
+  const logOut = useLogout();
 
   let navigate = useNavigate();
   // let docId;
@@ -38,7 +38,7 @@ const logOut=useLogout();
   const valueRef = useRef('');
 
   const [docId, setDocId] = useState("");
-  const [error,setError]= useState("");
+  const [error, setError] = useState("");
   const [User, setUser] = useState({
     id: docId,
     displayPicture: valueRef.imageUrl,
@@ -57,9 +57,7 @@ const logOut=useLogout();
     setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
   useEffect(() => {
-
     const auth = getAuth();
-
     const userAuthentication = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
@@ -67,52 +65,50 @@ const logOut=useLogout();
         const uid = user.uid; // ali_id: abc and moshin_id: efg
         // console.log(user); // email ali@test.com and moshin@test.com
 
-        if (user.email && uid) {
-          valueRef.userEmail = user.email
 
-          if (!user.emailVerified) {
-            // console.log("userEmail is", userEmail);
-            // console.log(user);
-            sendEmailVerification(auth.currentUser)
-              .then(() => {
-                { <VerifyEmail /> }
-                // window.alert("Email verification sent!");
-                toast.error("Kindly verify your email first!", {
-                  position: "top-center",
-                });
-                navigate("/login");
-                // ...
-              })
-              .catch((error) => {
-                // An error happened.
-                // console.log(error);
+        if (!user.emailVerified) {
+          // console.log("userEmail is", userEmail);
+          // console.log(user);
+          sendEmailVerification(auth.currentUser)
+            .then(() => {
+              { <VerifyEmail /> }
+              // window.alert("Email verification sent!");
+              toast.error("Kindly verify your email first!", {
+                position: "top-center",
               });
-          }
-          else {
-            toast.success("successfully logged in", {
-              position: "top-center",
+              navigate("/login");
+              // ...
             })
-            const querySnapshot = await getDocs(collection(db, "users"));
-            querySnapshot.forEach((doc) => {
-              // console.log(`${doc.id} => ${doc.data()}`);
-              if (doc.data().email === valueRef.userEmail) {
-                setDocId(doc.id);
-                document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
-                document.getElementById("displayPicture").name = doc.data().displayPicture
-                document.getElementById('title').textContent = "UPDATE PROFILE"
-                setUser(doc.data());
-              }
+            .catch((error) => {
+              // An error happened.
+              // console.log(error);
             });
-          }
         }
         else {
-          navigate("/login");
-          console.log("User is signed out");
-          // toast.error("User is signed out", {
-          //   position: "top-center",
-          // });
-          // ...
+          toast.success("successfully logged in", {
+            position: "top-center",
+          })
+          const querySnapshot = await getDocs(collection(db, "users"));
+          querySnapshot.forEach((doc) => {
+            // console.log(`${doc.id} => ${doc.data()}`);
+            valueRef.userEmail = user.email
+            if (doc.data().email === valueRef.userEmail) {
+              setDocId(doc.id);
+              document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
+              document.getElementById("displayPicture").name = doc.data().displayPicture
+              document.getElementById('title').textContent = "UPDATE PROFILE"
+              setUser(doc.data());
+            }
+          });
         }
+      }
+      else {
+        navigate("/login");
+        console.log("User is signed out");
+        // toast.error("User is signed out", {
+        //   position: "top-center",
+        // });
+        // ...
       }
     });
 
@@ -120,14 +116,14 @@ const logOut=useLogout();
   }, []);
 
 
-  
+
 
 
 
   const createProfile = async () => {
     // console.log(docId)
     const phoneRegex = /^\d{10}$/;
-  
+
     if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
         await deleteDoc(doc(db, "users", docId));
@@ -162,7 +158,7 @@ const logOut=useLogout();
         CreateProfile: "UPDATE PROFILE"
       });
       if (!phoneRegex.test(User.phoneNumber)) {
-      setError("Select only 10 digits");
+        setError("Select only 10 digits");
       } else {
         // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
         console.log("Document written with ID: ", docRef.id);
@@ -470,7 +466,7 @@ const logOut=useLogout();
                   onChange={handleChange}
                   required
                 />
-             {error? <div style={{backgroundColor:"red"}}>{error}</div>:""}
+                {error ? <div style={{ backgroundColor: "red" }}>{error}</div> : ""}
               </td>
             </tr>
           </tbody>
@@ -478,7 +474,7 @@ const logOut=useLogout();
             <tr>
               <td colSpan={2} style={{ textAlign: "center" }}>
                 <Button
-                  
+
                   value={User.CreateProfile}
                   // value="CREATE PROFILE"
                   id="create-profile-btn"
