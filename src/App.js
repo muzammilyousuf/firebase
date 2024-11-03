@@ -13,6 +13,7 @@ import Profile from './components/Screens/Profile';
 import Signup from './components/Screens/Signup';
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import VerifyEmail from './components/Screens/VerifyEmail';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path='/projects' element= {<Projects/>} > </Route>
           <Route path='/login' element= {<Login/>} > </Route>
           <Route path='/profile' element= {<Profile/>} > </Route>
+          <Route path='/emailverification' element= {<VerifyEmail/>} > </Route>
           <Route path='/signup' element= {<Signup/>} > </Route>
         
         </Routes>

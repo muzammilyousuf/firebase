@@ -2,13 +2,14 @@ import React from "react";
 import Button from "../Button";
 import { getAuth, createUserWithEmailAndPassword } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Signup() {
   let navigate = useNavigate();
 
-//   function checkPassword() {
-//     let password = document.getElementById("password").value;
-//   }
+  //   function checkPassword() {
+  //     let password = document.getElementById("password").value;
+  //   }
 
   const signUp = () => {
     const auth = getAuth();
@@ -18,24 +19,38 @@ function Signup() {
     let message = document.getElementById("message");
 
     if (password.length != 0) {
-      if (password == confirmPassword) {
+      if (password === confirmPassword) {
         message.textContent = "Password Matched";
         message.style.backgroundColor = "#3ae374";
         createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed up
-          const user = userCredential.user;
-          window.alert(user);
-          navigate("/profile");
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          alert(errorCode);
-          // ..
-        });
-  
+          .then((userCredential) => {
+            // Signed up
+            const user = userCredential.user;
+            toast.success("Signed up!", {
+              position: "top-center",
+            })
+            navigate("/profile");
+            // ...
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // ..
+            if (errorCode === "auth/email-already-in-use") {
+              toast.error("email already in use!", {
+                position: "top-center",
+              })
+            }
+            else if (errorCode === "auth/weak-password") {
+              toast.error("weak password!", {
+                position: "top-center",
+              })
+            } else {
+              console.log(errorCode);
+            }
+
+          });
+
       } else {
         message.textContent = "Password not matched";
         message.style.backgroundColor = "#ff4d4d";
@@ -110,7 +125,7 @@ function Signup() {
                 ></Button>
                 <br />
                 <hr />
-                <label style={{textAlign:"left"}} > Already have an account? </label>
+                <label style={{ textAlign: "left" }} > Already have an account? </label>
 
                 <Button
                   value={"SIGN IN"}

@@ -3,6 +3,7 @@ import './Login.css'
 import {
   getAuth,
   signInWithEmailAndPassword,
+  sendEmailVerification
 } from "../../config/firebase";
 import { useNavigate } from "react-router-dom";
 import Button from "../Button";
@@ -26,8 +27,24 @@ function Login() {
         const user = userCredential.user;
         // ...
         console.log(user.email, "successfully logged in");
-
-        if (email == user.email) {
+        if (!user.emailVerified) {
+          // console.log("userEmail is", userEmail);
+          // console.log(user);
+          sendEmailVerification(auth.currentUser)
+            .then(() => {
+              // window.alert("Email verification sent!");
+              toast.error("Verify your email first!", {
+                position: "top-center",
+              });
+              navigate("/emailverification");
+              // ...
+            })
+            .catch((error) => {
+              // An error happened.
+              // console.log(error);
+            });
+        }
+        else {
           navigate("/profile");
         }
 
@@ -40,15 +57,11 @@ function Login() {
           toast.error("Wrong password or user not found!", {
             position: "top-center",
           })
-          console.log(errorCode);
-
         }
         else if (errorCode === "auth/invalid-email") {
           toast.error("Wrong email address!", {
             position: "top-center",
           })
-          console.log(errorCode);
-
         } else {
           console.log(errorCode);
         }

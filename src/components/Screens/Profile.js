@@ -22,9 +22,14 @@ import {
 import Button from "../Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import no_dp from "./no dp.jpeg"
+import VerifyEmail from "./VerifyEmail";
+import { useLogout } from "../Functions/useLogout";
 
 const Profile = () => {
+const logOut=useLogout();
+
   let navigate = useNavigate();
   // let docId;
   // let userEmail;
@@ -33,7 +38,7 @@ const Profile = () => {
   const valueRef = useRef('');
 
   const [docId, setDocId] = useState("");
-
+  const [error,setError]= useState("");
   const [User, setUser] = useState({
     id: docId,
     displayPicture: valueRef.imageUrl,
@@ -70,6 +75,7 @@ const Profile = () => {
             // console.log(user);
             sendEmailVerification(auth.currentUser)
               .then(() => {
+                { <VerifyEmail /> }
                 // window.alert("Email verification sent!");
                 toast.error("Kindly verify your email first!", {
                   position: "top-center",
@@ -81,7 +87,8 @@ const Profile = () => {
                 // An error happened.
                 // console.log(error);
               });
-          } else {
+          }
+          else {
             toast.success("successfully logged in", {
               position: "top-center",
             })
@@ -113,27 +120,14 @@ const Profile = () => {
   }, []);
 
 
-
-  function logOut() {
-    const auth = getAuth();
-    signOut(auth)
-      .then(() => {
-        navigate("/login");
-        console.log("Sign-out successful.");
-        toast.success("User sign out!", {
-          position: "top-center",
-        });
-      })
-      .catch((error) => {
-        // An error happened.
-        // console.log(error);
-      });
-  };
+  
 
 
 
   const createProfile = async () => {
     // console.log(docId)
+    const phoneRegex = /^\d{10}$/;
+  
     if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
         await deleteDoc(doc(db, "users", docId));
@@ -158,7 +152,7 @@ const Profile = () => {
       const docRef = await addDoc(collection(db, "users"), {
         // id: User.id || docId,
         email: User.email || valueRef.userEmail,
-        displayPicture: valueRef.imageUrl,
+        displayPicture: valueRef.imageUrl || "",
         first: User.first,
         last: User.last,
         dob: User.dob,
@@ -167,17 +161,21 @@ const Profile = () => {
         phoneNumber: User.phoneNumber,
         CreateProfile: "UPDATE PROFILE"
       });
-      // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
-      console.log("Document written with ID: ", docRef.id);
-      userupdateProfile();
+      if (!phoneRegex.test(User.phoneNumber)) {
+      setError("Select only 10 digits");
+      } else {
+        // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
+        console.log("Document written with ID: ", docRef.id);
+        userupdateProfile();
 
-      User.CreateProfile = "UPDATE PROFILE"
-      // docId = docRef.id
-      // valueRef.docId = docRef.id
-      setDocId(docRef.id);
+        User.CreateProfile = "UPDATE PROFILE"
+        // docId = docRef.id
+        // valueRef.docId = docRef.id
+        setDocId(docRef.id);
 
-      // console.log("docId is", docId);
+        // console.log("docId is", docId);
 
+      }
     } catch (e) {
       console.error("Error adding document: ", e);
     }
@@ -472,6 +470,7 @@ const Profile = () => {
                   onChange={handleChange}
                   required
                 />
+             {error? <div style={{backgroundColor:"red"}}>{error}</div>:""}
               </td>
             </tr>
           </tbody>
@@ -479,6 +478,7 @@ const Profile = () => {
             <tr>
               <td colSpan={2} style={{ textAlign: "center" }}>
                 <Button
+                  
                   value={User.CreateProfile}
                   // value="CREATE PROFILE"
                   id="create-profile-btn"
@@ -490,7 +490,7 @@ const Profile = () => {
                 <Button
                   value="SIGN OUT"
                   id="signOut-btn"
-                  onClick={() => logOut()}
+                  onClick={logOut}
                   class="btn btn-secondary"
                 ></Button>
               </td>
