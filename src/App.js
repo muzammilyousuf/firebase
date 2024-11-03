@@ -17,6 +17,7 @@ import VerifyEmail from './components/Screens/VerifyEmail';
 
 
 function App() {
+
   return (
     <React.StrictMode>
       <BrowserRouter>

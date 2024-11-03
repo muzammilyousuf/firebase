@@ -4,9 +4,9 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   sendEmailVerification
-} from "../../config/firebase";
+} from "../config/firebase";
 import { useNavigate } from "react-router-dom";
-import Button from "../Button";
+import Button from "../Functions/Button";
 import { toast } from "react-toastify";
 
 function Login() {
@@ -53,6 +53,7 @@ function Login() {
         console.log(error);
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(errorMessage);
         if (errorCode === "auth/invalid-credential") {
           toast.error("Wrong password or user not found!", {
             position: "top-center",
@@ -60,6 +61,10 @@ function Login() {
         }
         else if (errorCode === "auth/invalid-email") {
           toast.error("Wrong email address!", {
+            position: "top-center",
+          })
+        } else if (errorCode === "auth/network-request-failed"){
+          toast.error("Network failed, No Internet !", {
             position: "top-center",
           })
         } else {

@@ -1,6 +1,6 @@
 import React from "react";
-import Button from "../Button";
-import { getAuth, createUserWithEmailAndPassword } from "../../config/firebase";
+import Button from "../Functions/Button";
+import { getAuth, createUserWithEmailAndPassword } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -18,7 +18,7 @@ function Signup() {
     let confirmPassword = document.getElementById("confirmPassword").value;
     let message = document.getElementById("message");
 
-    if (password.length != 0) {
+    if (password.length !== 0) {
       if (password === confirmPassword) {
         message.textContent = "Password Matched";
         message.style.backgroundColor = "#3ae374";
@@ -26,6 +26,7 @@ function Signup() {
           .then((userCredential) => {
             // Signed up
             const user = userCredential.user;
+            console.log(user);
             toast.success("Signed up!", {
               position: "top-center",
             })
@@ -35,6 +36,7 @@ function Signup() {
           .catch((error) => {
             const errorCode = error.code;
             const errorMessage = error.message;
+            console.log(errorMessage);
             // ..
             if (errorCode === "auth/email-already-in-use") {
               toast.error("email already in use!", {
@@ -56,8 +58,10 @@ function Signup() {
         message.style.backgroundColor = "#ff4d4d";
       }
     } else {
-      alert("Password can't be empty");
       message.textContent = "";
+      toast.success("Password can't be empty!", {
+        position: "top-center",
+      })
     }
 
   };

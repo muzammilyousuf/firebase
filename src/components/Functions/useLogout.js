@@ -2,7 +2,7 @@
 import {
   signOut,
   getAuth,
-} from "../../config/firebase";
+} from "../config/firebase";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 

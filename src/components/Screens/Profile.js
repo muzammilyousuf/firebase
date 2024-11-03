@@ -1,6 +1,6 @@
 import { React, useState, useEffect, useRef } from "react";
 import {
-  signOut,
+  // signOut,
   onAuthStateChanged,
   sendEmailVerification,
   collection,
@@ -18,17 +18,30 @@ import {
   uploadBytes,
   getDownloadURL,
   uploadBytesResumable
-} from "../../config/firebase";
-import Button from "../Button";
+} from "../config/firebase";
+import Button from "../Functions/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 import no_dp from "./no dp.jpeg"
-import VerifyEmail from "./VerifyEmail";
+// import VerifyEmail from "./VerifyEmail";
 import { useLogout } from "../Functions/useLogout";
 
 const Profile = () => {
   const logOut = useLogout();
+  
+  
+  // let nodp = no_dp;
+
+  // function dp(){
+
+  //   if (document.getElementById("previewPicture").src == ""){
+  //     document.getElementById("previewPicture").src = nodp;
+  //   } 
+  //   else{
+  //     document.getElementById("previewPicture").src = User.displayPicture;
+
+  //   }
+  // }
 
   let navigate = useNavigate();
   // let docId;
@@ -39,6 +52,7 @@ const Profile = () => {
 
   const [docId, setDocId] = useState("");
   const [error, setError] = useState("");
+
   const [User, setUser] = useState({
     id: docId,
     displayPicture: valueRef.imageUrl,
@@ -53,9 +67,23 @@ const Profile = () => {
   });
 
 
-  const handleChange = (e) =>
-    setUser((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const phoneRegex = /^\d{11}$/;
+    // const firstnameRegex = "";
 
+    if (name === 'phoneNumber' && !phoneRegex.test(value)) {
+      setError("Should be 11 digits");
+    } else {
+      setError("")
+    };
+
+    if (name === 'first' | 'last' && value === "") {
+      setError("first name or last name should be enter");
+    }
+
+    setUser((prev) => ({ ...prev, [name]: value }));
+  }
   useEffect(() => {
     const auth = getAuth();
     const userAuthentication = onAuthStateChanged(auth, async (user) => {
@@ -63,7 +91,9 @@ const Profile = () => {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid; // ali_id: abc and moshin_id: efg
+        console.log(uid);
         // console.log(user); // email ali@test.com and moshin@test.com
+        valueRef.userEmail = user.email;
 
 
         if (!user.emailVerified) {
@@ -71,7 +101,7 @@ const Profile = () => {
           // console.log(user);
           sendEmailVerification(auth.currentUser)
             .then(() => {
-              { <VerifyEmail /> }
+              // { <VerifyEmail /> }
               // window.alert("Email verification sent!");
               toast.error("Kindly verify your email first!", {
                 position: "top-center",
@@ -87,16 +117,15 @@ const Profile = () => {
         else {
           toast.success("successfully logged in", {
             position: "top-center",
-          })
+          });
           const querySnapshot = await getDocs(collection(db, "users"));
           querySnapshot.forEach((doc) => {
             // console.log(`${doc.id} => ${doc.data()}`);
-            valueRef.userEmail = user.email
             if (doc.data().email === valueRef.userEmail) {
               setDocId(doc.id);
+              document.getElementById('title').textContent = "UPDATE PROFILE"
               document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
               document.getElementById("displayPicture").name = doc.data().displayPicture
-              document.getElementById('title').textContent = "UPDATE PROFILE"
               setUser(doc.data());
             }
           });
@@ -113,7 +142,7 @@ const Profile = () => {
     });
 
     return () => userAuthentication();
-  }, []);
+  }, [navigate]);
 
 
 
@@ -122,7 +151,6 @@ const Profile = () => {
 
   const createProfile = async () => {
     // console.log(docId)
-    const phoneRegex = /^\d{10}$/;
 
     if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
@@ -157,8 +185,8 @@ const Profile = () => {
         phoneNumber: User.phoneNumber,
         CreateProfile: "UPDATE PROFILE"
       });
-      if (!phoneRegex.test(User.phoneNumber)) {
-        setError("Select only 10 digits");
+      if (error) {
+        setError("Phone number should be 11 digits");
       } else {
         // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
         console.log("Document written with ID: ", docRef.id);
@@ -242,12 +270,12 @@ const Profile = () => {
     var dp = document.getElementById("displayPicture").files[0];
     // console.log(dp)
 
-    if (dp != undefined) {
+    if (dp !== undefined) {
       console.log("UPLOAD FUNCTION CALL")
       const dpRef = ref(storage, `${dp.name}`);
 
       // 'file' comes from the Blob or File API
-      if (dpRef != "")
+      if (dpRef !== "")
         uploadBytes(dpRef, dp).then((snapshot) => {
           console.log('Uploaded a blob or file!');
           toast.success("Display Picture Uploaded!", {
@@ -309,6 +337,7 @@ const Profile = () => {
           xhr.responseType = 'blob';
           xhr.onload = (event) => {
             const blob = xhr.response;
+            console.log(blob);
           };
           xhr.open('GET', url);
           xhr.send();
@@ -343,11 +372,12 @@ const Profile = () => {
             <tr>
               <td colSpan={2}>
                 <div id="dp" style={{ textAlign: "center" }} >
-                  <img id="previewPicture" class="rounded-circle" src={no_dp} />
+                  <img id="previewPicture" class="rounded-circle" src={no_dp} alt="dp" />
                   <input
                     type="file"
                     name="displayPicture"
                     id="displayPicture"
+                    onChange={handleChange}
                   >
                   </input>
                   <Button
@@ -373,6 +403,8 @@ const Profile = () => {
                   onChange={handleChange}
                   required
                 />
+                {error ? <div style={{ backgroundColor: "red" }}>{error}</div> : ""}
+
               </td>
             </tr>
             <tr>
@@ -387,6 +419,8 @@ const Profile = () => {
                   onChange={handleChange}
                   required
                 />
+                {error ? <div style={{ backgroundColor: "red" }}>{error.lastnameerror}</div> : ""}
+
               </td>
             </tr>
             <tr>

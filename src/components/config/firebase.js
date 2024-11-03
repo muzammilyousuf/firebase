@@ -17,7 +17,7 @@ const firebaseConfig = {
   messagingSenderId: "190091871310",
   appId: "1:190091871310:web:903c66f9ae7b17c667ef1f",
   databaseURL: "https://fir-23f49-default-rtdb.firebaseio.com/",
-  storageBucket: "gs://fir-23f49.appspot.com",
+  // storageBucket: "gs://fir-23f49.appspot.com",
 };
 
 // Initialize Firebase
