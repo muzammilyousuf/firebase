@@ -22,14 +22,14 @@ import {
 import Button from "../Functions/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import no_dp from "./no dp.jpeg"
+import no_dp from "../Assets/no dp.jpeg"
 // import VerifyEmail from "./VerifyEmail";
 import { useLogout } from "../Functions/useLogout";
 
 const Profile = () => {
   const logOut = useLogout();
-  
-  
+
+
   // let nodp = no_dp;
 
   // function dp(){
@@ -127,6 +127,8 @@ const Profile = () => {
               document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
               document.getElementById("displayPicture").name = doc.data().displayPicture
               setUser(doc.data());
+              navigate("/projects");
+
             }
           });
         }
@@ -143,10 +145,6 @@ const Profile = () => {
 
     return () => userAuthentication();
   }, [navigate]);
-
-
-
-
 
 
   const createProfile = async () => {

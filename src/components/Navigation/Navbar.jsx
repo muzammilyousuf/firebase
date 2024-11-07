@@ -2,8 +2,21 @@ import "./Navbar.css";
 import logo from "../logo.svg";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useRef } from "react";
 
 function Navbar() {
+
+  const valueRef = useRef("");
+
+
+  if (valueRef.userEmail){
+    var loginPage = document.getElementById("login");
+    var profilePage = document.getElementById("profile");
+
+    loginPage = profilePage;
+
+  }
+
   return (
     <div>
       <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -44,9 +57,12 @@ function Navbar() {
                   Contact Us
                 </Link>
               </li>
-              <li class="nav-item">
-                <Link class="nav-link" to="/login">
+              <li  class="nav-item">
+                <Link id="login" class="nav-link" to="/login">
                   Login
+                </Link>
+                <Link id="profile" class="nav-link" to="/profile">
+                  Profile
                 </Link>
               </li>
               {/* <li class="nav-item dropdown">

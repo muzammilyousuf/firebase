@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../Functions/Button";
 import { getAuth, createUserWithEmailAndPassword } from "../config/firebase";
 import { useNavigate } from "react-router-dom";
@@ -6,10 +6,20 @@ import { toast } from "react-toastify";
 
 function Signup() {
   let navigate = useNavigate();
-
+    
   //   function checkPassword() {
   //     let password = document.getElementById("password").value;
   //   }
+
+
+  // const handleChange = (e) =>{
+  //   const {name, value} = e.target;
+  //   if (password === confirmPassword){
+  //     // User
+  //   }
+
+  // }
+  
 
   const signUp = () => {
     const auth = getAuth();
@@ -18,10 +28,15 @@ function Signup() {
     let confirmPassword = document.getElementById("confirmPassword").value;
     let message = document.getElementById("message");
 
+    
+
+
+
+
     if (password.length !== 0) {
       if (password === confirmPassword) {
         message.textContent = "Password Matched";
-        message.style.backgroundColor = "#3ae374";
+        message.style.backgroundColor = "lightgreen";
         createUserWithEmailAndPassword(auth, email, password)
           .then((userCredential) => {
             // Signed up
@@ -55,7 +70,7 @@ function Signup() {
 
       } else {
         message.textContent = "Password not matched";
-        message.style.backgroundColor = "#ff4d4d";
+        message.style.backgroundColor = "red";
       }
     } else {
       message.textContent = "";
@@ -113,7 +128,7 @@ function Signup() {
                   placeholder="Re-Enter your password"
                 //   onChange={checkPassword}
                 />
-                <p id="message"></p>
+                <p id="message" ></p>
               </td>
             </tr>
           </tbody>

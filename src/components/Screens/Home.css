@@ -1,0 +1,36 @@
+.home {
+  display: flex;
+  flex-direction: column;
+}
+
+.display{
+  height: 100vh;
+}
+
+.display p {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.display p input {
+  margin-top: 50px;
+  width: 200px;
+}
+
+.display p h1 {
+  /* text-align: center; */
+  font-size: 80px;
+  font-family: "Times New Roman", Times, serif;
+  color: white
+}
+
+.display p h4{
+  color: lightcyan;
+}
+
+.footer{
+  color: black;
+  background-color: black;
+}

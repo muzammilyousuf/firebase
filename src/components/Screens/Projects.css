@@ -1,0 +1,18 @@
+.projects {
+  padding: 1%;
+}
+
+.cards {
+  display: flex;
+  flex-direction: row;
+  height: 100px;
+  width: 100%;
+  padding: 2%;
+  gap: 2%;
+}
+
+.project-btns {
+  display: flex;
+  justify-content: center;
+  gap: 10%;
+}
