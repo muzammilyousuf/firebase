@@ -7,11 +7,11 @@ import { useRef } from "react";
 function Navbar() {
 
   const valueRef = useRef("");
+  var loginPage = document.getElementById("login");
+  var profilePage = document.getElementById("profile");
 
 
   if (valueRef.userEmail){
-    var loginPage = document.getElementById("login");
-    var profilePage = document.getElementById("profile");
 
     loginPage = profilePage;
 
@@ -44,7 +44,7 @@ function Navbar() {
               </li>
               <li class="nav-item">
                 <Link class="nav-link" to="/about">
-                  About Us
+                  About
                 </Link>
               </li>
               <li class="nav-item">
@@ -54,14 +54,14 @@ function Navbar() {
               </li>
               <li class="nav-item">
                 <Link class="nav-link" to="/contact">
-                  Contact Us
+                  Contact
                 </Link>
               </li>
               <li  class="nav-item">
                 <Link id="login" class="nav-link" to="/login">
                   Login
                 </Link>
-                <Link id="profile" class="nav-link" to="/profile">
+                <Link id="profile" class="nav-link" to="/profile" >
                   Profile
                 </Link>
               </li>

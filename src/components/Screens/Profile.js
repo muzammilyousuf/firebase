@@ -1,6 +1,5 @@
 import { React, useState, useEffect, useRef } from "react";
 import {
-  // signOut,
   onAuthStateChanged,
   sendEmailVerification,
   collection,
@@ -8,10 +7,7 @@ import {
   db,
   getDocs,
   getAuth,
-  // updateProfile,
   doc,
-  // setDoc,
-  // updateDoc,
   deleteDoc,
   ref,
   storage,
@@ -23,35 +19,19 @@ import Button from "../Functions/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import no_dp from "../Assets/no dp.jpeg"
-// import VerifyEmail from "./VerifyEmail";
 import { useLogout } from "../Functions/useLogout";
 
 const Profile = () => {
   const logOut = useLogout();
 
-
-  // let nodp = no_dp;
-
-  // function dp(){
-
-  //   if (document.getElementById("previewPicture").src == ""){
-  //     document.getElementById("previewPicture").src = nodp;
-  //   } 
-  //   else{
-  //     document.getElementById("previewPicture").src = User.displayPicture;
-
-  //   }
-  // }
-
   let navigate = useNavigate();
-  // let docId;
-  // let userEmail;
-  // let CreateProfile;
 
   const valueRef = useRef('');
 
   const [docId, setDocId] = useState("");
   const [error, setError] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
 
   const [User, setUser] = useState({
     id: docId,
@@ -70,7 +50,6 @@ const Profile = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     const phoneRegex = /^\d{11}$/;
-    // const firstnameRegex = "";
 
     if (name === 'phoneNumber' && !phoneRegex.test(value)) {
       setError("Should be 11 digits");
@@ -83,35 +62,33 @@ const Profile = () => {
     }
 
     setUser((prev) => ({ ...prev, [name]: value }));
-  }
+  };
+
+
+
   useEffect(() => {
     const auth = getAuth();
     const userAuthentication = onAuthStateChanged(auth, async (user) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        const uid = user.uid; // ali_id: abc and moshin_id: efg
+        const uid = user.uid;
         console.log(uid);
-        // console.log(user); // email ali@test.com and moshin@test.com
         valueRef.userEmail = user.email;
 
 
         if (!user.emailVerified) {
-          // console.log("userEmail is", userEmail);
-          // console.log(user);
           sendEmailVerification(auth.currentUser)
             .then(() => {
-              // { <VerifyEmail /> }
               // window.alert("Email verification sent!");
               toast.error("Kindly verify your email first!", {
                 position: "top-center",
               });
               navigate("/login");
-              // ...
             })
             .catch((error) => {
               // An error happened.
-              // console.log(error);
+              console.log(error);
             });
         }
         else {
@@ -124,11 +101,9 @@ const Profile = () => {
             if (doc.data().email === valueRef.userEmail) {
               setDocId(doc.id);
               document.getElementById('title').textContent = "UPDATE PROFILE"
-              document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
-              document.getElementById("displayPicture").name = doc.data().displayPicture
+              // document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
+              setProfileImage(doc.data().displayPicture);
               setUser(doc.data());
-              navigate("/projects");
-
             }
           });
         }
@@ -147,8 +122,9 @@ const Profile = () => {
   }, [navigate]);
 
 
+
   const createProfile = async () => {
-    // console.log(docId)
+    uploadProfile();
 
     if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
@@ -160,19 +136,8 @@ const Profile = () => {
       }
     }
 
-    //   userupdateProfile();
-    // }
-    // else {
-    //   console.log(docId, "docId is not found")
-    //   }
-    // } 
-    // else {
-    // console.log("userEmail is", valueRef.userEmail);
-
-
     try {
       const docRef = await addDoc(collection(db, "users"), {
-        // id: User.id || docId,
         email: User.email || valueRef.userEmail,
         displayPicture: valueRef.imageUrl || "",
         first: User.first,
@@ -186,27 +151,15 @@ const Profile = () => {
       if (error) {
         setError("Phone number should be 11 digits");
       } else {
-        // document.getElementById("create-profile-btn").value = "UPDATE PROFILE";
         console.log("Document written with ID: ", docRef.id);
         userupdateProfile();
-
         User.CreateProfile = "UPDATE PROFILE"
-        // docId = docRef.id
-        // valueRef.docId = docRef.id
         setDocId(docRef.id);
-
-        // console.log("docId is", docId);
-
       }
     } catch (e) {
       console.error("Error adding document: ", e);
     }
-    // }
   };
-
-  // const CreateProfile = User.id != "" ? "UPDATE PROFILE" : "CREATE PROFILE";
-
-
 
   const userupdateProfile = async () => {
     console.log("Update Profile Call");
@@ -220,55 +173,13 @@ const Profile = () => {
         position: "top-center",
       });
     }
-
-    // await deleteDoc(doc(db, "users", docId));
-
-
-    // const docIdDocRef = doc(db, "users", docId);
-    // await setDoc(docIdDocRef, {
-    //   first: User.first,
-    //   last: User.last,
-    //   dob: User.dob,
-    //   gender: User.gender,
-    //   city: User.city,
-    // });
-
-    // // To update age and favorite color:
-    // await updateDoc(docIdDocRef, {
-    //   first: User.first,
-    //   last: User.last,
-    //   dob: User.dob,
-    //   gender: User.gender,
-    //   city: User.city,
-    // });
-
-
-    //   updateProfile(auth.currentUser, {
-    //     email: User.email,
-    //     first: User.first,
-    //     last: User.last,
-    //     dob: User.dob,
-    //     gender: User.gender,
-    //     city: User.city,
-    //   })
-    //     .then(() => {
-    //       console.log(docId, "docId is updated!");
-    //       // Profile updated!
-    //       // ...
-    //     })
-    //     .catch((error) => {
-    //       // console.log(error);
-    //       // An error occurred
-    //       // ...
-    //     });
   };
 
 
   function uploadProfile() {
-    var dp = document.getElementById("displayPicture").files[0];
-    // console.log(dp)
+    var dp = document.getElementById("upload").files[0];
 
-    if (dp !== undefined) {
+    if (dp !== undefined && uploadFileRef) {
       console.log("UPLOAD FUNCTION CALL")
       const dpRef = ref(storage, `${dp.name}`);
 
@@ -292,7 +203,6 @@ const Profile = () => {
           switch (snapshot.state) {
             case 'paused':
               console.log('Upload is paused');
-
               break;
             case 'running':
               console.log('Upload is running');
@@ -350,10 +260,29 @@ const Profile = () => {
           // Handle any errors
         });
     }
-    else {
-      toast.error("Choose Profile Picture first!", {
-        position: "top-center",
-      });
+  };
+
+  const [selectedFile, setSelectedFile] = useState("");
+  const [imagePreview, setImagePreview] = useState("");
+  const defaultImage = no_dp;
+  const uploadFileRef = useRef("");
+
+  const handleChangeFile = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile();
+
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+    }
+  };
+
+  const ImagetoShow = imagePreview || profileImage || defaultImage;
+
+
+  const uploadFile = async () => {
+    if (uploadFileRef) {
+      uploadFileRef.current.click();
     }
   };
 
@@ -370,20 +299,22 @@ const Profile = () => {
             <tr>
               <td colSpan={2}>
                 <div id="dp" style={{ textAlign: "center" }} >
-                  <img id="previewPicture" class="rounded-circle" src={no_dp} alt="dp" />
+                  <img id="previewPicture" class="rounded-circle" src={ImagetoShow} alt="dp" onChange={handleChangeFile} />
+                  <Button
+                    value="UPLOAD"
+                    class="btn btn-info"
+                    onClick={() => uploadFile()}
+                  ></Button>
                   <input
                     type="file"
                     name="displayPicture"
-                    id="displayPicture"
-                    onChange={handleChange}
-                  >
-                  </input>
-                  <Button
-                    value="UPLOAD"
                     id="upload"
-                    onClick={() => uploadProfile()}
-                    class="btn btn-info"
-                  ></Button>
+                    ref={uploadFileRef}
+                    accept=".jpeg, .jpg"
+                    style={{ display: "none" }}
+                    onChange={handleChangeFile}
+                  />
+                  {selectedFile && <p>Selected Picture: {selectedFile.name}</p>}
                 </div>
               </td>
 
