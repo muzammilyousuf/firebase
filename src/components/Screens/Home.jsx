@@ -24,7 +24,7 @@ function Home() {
     <div className="home">
       <div className="display">
         <p style={backgroundImageStyle}>
-          <h4 > "Hi, this is </h4>
+          <h4> "Hi, this is </h4>
           <h1> REACT-IVE </h1>
           <h4> by Muzammil" </h4>
           <input type="button" value="Contact me" class="btn btn-info" onClick={ContactBtn} />

@@ -5,17 +5,17 @@
     padding: 7%;
   }
 
-table, tr, th {
+.login table, tr, th {
     width: 50%;
     padding: 1%;
     font-size: larger;
 }
 
-td{
+.login td{
     padding: 1%;
 }
 
-input{
+.login input{
     width: 100%;
     padding: 1%;
 }
