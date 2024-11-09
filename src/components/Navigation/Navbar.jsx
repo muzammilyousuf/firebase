@@ -5,17 +5,9 @@ import { Link } from "react-router-dom";
 import { useRef } from "react";
 
 function Navbar() {
-
-  const valueRef = useRef("");
-  var loginPage = document.getElementById("login");
-  var profilePage = document.getElementById("profile");
-
-
-  if (valueRef.userEmail){
-
-    loginPage = profilePage;
-
-  }
+  const userRef = useRef("");
+  let user =  userRef.userEmail;
+  console.log(user);
 
   return (
     <div>
@@ -57,13 +49,16 @@ function Navbar() {
                   Contact
                 </Link>
               </li>
-              <li  class="nav-item">
-                <Link id="login" class="nav-link" to="/login">
-                  Login
-                </Link>
-                <Link id="profile" class="nav-link" to="/profile" >
-                  Profile
-                </Link>
+              <li class="nav-item">
+                {user ? (
+                  <Link id="login" class="nav-link" to="/login">
+                    Login
+                  </Link>
+                ) : (
+                  <Link id="profile" class="nav-link" to="/profile">
+                    Profile
+                  </Link>
+                )}
               </li>
               {/* <li class="nav-item dropdown">
                 <a

@@ -129,10 +129,10 @@ function Projects() {
     }
   }
 
-  const projects = [{ title: "", id: "" }];
+  const projects = [{ id: "", title: "", desc: "", image:"", file: "" }];
 
   const listProjects = projects.map((projects) => (
-    <li key={projects.id}> {projects.title} </li>
+    <li key={projects.id}> {projects.title} {projects.desc} {projects.image} {projects.file} </li>
   ));
 
   return (

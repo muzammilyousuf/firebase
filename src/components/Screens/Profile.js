@@ -26,23 +26,22 @@ const Profile = () => {
 
   let navigate = useNavigate();
 
-  const valueRef = useRef('');
+  const userRef = useRef('');
 
   const [docId, setDocId] = useState("");
   const [error, setError] = useState("");
-  const [profileImage, setProfileImage] = useState("");
 
 
   const [User, setUser] = useState({
     id: docId,
-    displayPicture: valueRef.imageUrl,
+    displayPicture: userRef.imageUrl,
     first: "",
     last: "",
     dob: "",
     gender: "",
     city: "",
     phoneNumber: "",
-    email: valueRef.userEmail,
+    email: userRef.userEmail,
     CreateProfile: "CREATE PROFILE",
   });
 
@@ -73,8 +72,8 @@ const Profile = () => {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
         const uid = user.uid;
-        console.log(uid);
-        valueRef.userEmail = user.email;
+        console.log("user id:", uid);
+        userRef.userEmail = user.email;
 
 
         if (!user.emailVerified) {
@@ -98,11 +97,10 @@ const Profile = () => {
           const querySnapshot = await getDocs(collection(db, "users"));
           querySnapshot.forEach((doc) => {
             // console.log(`${doc.id} => ${doc.data()}`);
-            if (doc.data().email === valueRef.userEmail) {
+            if (doc.data().email === userRef.userEmail) {
+              setProfileImage(doc.data().displayPicture);
               setDocId(doc.id);
               document.getElementById('title').textContent = "UPDATE PROFILE"
-              // document.getElementById('previewPicture').setAttribute('src', doc.data().displayPicture)
-              setProfileImage(doc.data().displayPicture);
               setUser(doc.data());
             }
           });
@@ -124,7 +122,7 @@ const Profile = () => {
 
 
   const createProfile = async () => {
-    uploadProfile();
+    uploadPicture();
 
     if (User.CreateProfile === "UPDATE PROFILE" && docId) {
       try {
@@ -138,8 +136,8 @@ const Profile = () => {
 
     try {
       const docRef = await addDoc(collection(db, "users"), {
-        email: User.email || valueRef.userEmail,
-        displayPicture: valueRef.imageUrl || "",
+        email: User.email || userRef.userEmail,
+        displayPicture: userRef.imageUrl || profileImage || "",
         first: User.first,
         last: User.last,
         dob: User.dob,
@@ -176,7 +174,7 @@ const Profile = () => {
   };
 
 
-  function uploadProfile() {
+  function uploadPicture() {
     var dp = document.getElementById("upload").files[0];
 
     if (dp !== undefined && uploadFileRef) {
@@ -253,7 +251,7 @@ const Profile = () => {
           // Or inserted into an <img> element
           const img = document.getElementById('previewPicture');
           img.setAttribute('src', url);
-          valueRef.imageUrl = url;
+          userRef.imageUrl = url;
 
         })
         .catch((error) => {
@@ -264,6 +262,8 @@ const Profile = () => {
 
   const [selectedFile, setSelectedFile] = useState("");
   const [imagePreview, setImagePreview] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
   const defaultImage = no_dp;
   const uploadFileRef = useRef("");
 
@@ -280,7 +280,7 @@ const Profile = () => {
   const ImagetoShow = imagePreview || profileImage || defaultImage;
 
 
-  const uploadFile = async () => {
+  const uploadFile = () => {
     if (uploadFileRef) {
       uploadFileRef.current.click();
     }
@@ -307,7 +307,7 @@ const Profile = () => {
                   ></Button>
                   <input
                     type="file"
-                    name="displayPicture"
+                    name="upload"
                     id="upload"
                     ref={uploadFileRef}
                     accept=".jpeg, .jpg"
