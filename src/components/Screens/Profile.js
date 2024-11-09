@@ -1,4 +1,4 @@
-import { React, useState, useEffect, useRef } from "react";
+import { React, useState, useEffect, useRef, } from "react";
 import {
   onAuthStateChanged,
   sendEmailVerification,
@@ -20,8 +20,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import no_dp from "../Assets/no dp.jpeg"
 import { useLogout } from "../Functions/useLogout";
+import Loader from "react-js-loader";
+import "./Profile.css"
+
+
 
 const Profile = () => {
+
   const logOut = useLogout();
 
   let navigate = useNavigate();
@@ -30,6 +35,7 @@ const Profile = () => {
 
   const [docId, setDocId] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
 
   const [User, setUser] = useState({
@@ -64,8 +70,10 @@ const Profile = () => {
   };
 
 
-
   useEffect(() => {
+    
+    setLoading(true);
+    
     const auth = getAuth();
     const userAuthentication = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -94,14 +102,16 @@ const Profile = () => {
           toast.success("successfully logged in", {
             position: "top-center",
           });
+
           const querySnapshot = await getDocs(collection(db, "users"));
           querySnapshot.forEach((doc) => {
             // console.log(`${doc.id} => ${doc.data()}`);
             if (doc.data().email === userRef.userEmail) {
               setProfileImage(doc.data().displayPicture);
               setDocId(doc.id);
-              document.getElementById('title').textContent = "UPDATE PROFILE"
+              // document.getElementById('title').textContent = "UPDATE PROFILE"
               setUser(doc.data());
+              setLoading(false);
             }
           });
         }
@@ -285,14 +295,16 @@ const Profile = () => {
       uploadFileRef.current.click();
     }
   };
-
+  const title = User.email ? "UPDATE PROFILE" : "CREATE PROFILE";
   return (
     <div>
-      <div className="login">
-        <table>
+      <div className="profile">
+        {loading && <div className="loader"> <Loader type="spinner-cub" bgColor="grey" color="black" title={"loading..."} size={100} /> </div>}
+
+        {!loading && <table>
           <thead>
             <tr style={{ textAlign: "center" }}>
-              <th colSpan={2}> <label id="title"> CREATE PROFILE </label></th>
+              <th colSpan={2}> <label id="title">  {title} </label></th>
             </tr>
           </thead>
           <tbody>
@@ -455,7 +467,7 @@ const Profile = () => {
               </td>
             </tr>
           </tfoot>
-        </table>
+        </table>}
       </div>
     </div>
   );
