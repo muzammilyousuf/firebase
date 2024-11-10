@@ -10,7 +10,7 @@ export default function Card(props, title) {
     <div class="card-body">
       <h5 class="card-title">{props.title !=="" ? "Title" : {title} }</h5>
       <p class="card-text"> {props.desc} </p>
-      <a href={props.btnhref} class="btn btn-primary">View Profile</a>
+      <a href={props.btnhref} class="btn btn-primary">View Project</a>
     </div>
   </div>
   );

@@ -192,7 +192,7 @@ const Profile = () => {
       const dpRef = ref(storage, `${dp.name}`);
 
       // 'file' comes from the Blob or File API
-      if (dpRef !== "")
+      // if (dpRef !== "")
         uploadBytes(dpRef, dp).then((snapshot) => {
           console.log('Uploaded a blob or file!');
           toast.success("Display Picture Uploaded!", {

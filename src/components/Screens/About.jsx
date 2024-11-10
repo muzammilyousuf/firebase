@@ -10,7 +10,7 @@ function About() {
       <div className="heading-1">
         <h1>The Project:</h1>
         <p>
-          The application allows Desk Skills students to sign up, publish their
+          The application allows Desk Skill students to sign up, publish their
           projects, and share them with the public. It serves as an online
           portfolio, enabling students to showcase their work and build a
           presence within the community. The goal is to provide a platform where
@@ -24,9 +24,9 @@ function About() {
         <h1>About Me:</h1>
         <p>
           My name is Muzammil, also student of Sir, Raza Ali and currently learning React JS
-          through a course at Desk Skills, located in Cantonment Shopping Mall
+          through a course at Desk Skill, located in Cantonment Shopping Mall
           near Millennium Mall, Johar Morr, Karachi. During this course, I developed this
-          project specifically designed for the students of Desk Skills to help
+          project specifically designed for the students of Desk Skill to help
           them highlight their technical skills.
         </p>
 
