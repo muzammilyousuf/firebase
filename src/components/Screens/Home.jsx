@@ -1,6 +1,4 @@
 import React from "react";
-import Card from "../Functions/Card";
-import Picture from "../Assets/8191JLvpswL.jpg";
 import backgroundImage from "../Assets/74112617-d6741a00-4b63-11ea-9757-81c55fe8e9b5.gif";
 import "./Contact.css";
 import "./Home.css";
